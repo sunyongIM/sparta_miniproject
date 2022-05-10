@@ -1,0 +1,48 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.addboard-wrapper {
+    background: #FFFBF0;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.addboard-content {
+    display: flex;
+    flex-wrap: wrap;
+    background: #FFFBF0;
+}
+
+.addboard-content-img {
+    margin: 0 20px;
+}
+
+.addboard-content-img img {
+    width: 400px;
+    height: 450px;
+}
+
+.addboard-content-text {
+    margin: 0 20px;
+}
+
+.addboard-content-text-title {
+    margin: 0 0 10px 0;
+    width: 400px;
+}
+
+.addboard-content-text-comment {
+    width: 400px;
+    margin: 0 0 10px 0;
+}
+
+.addboard-content-text-comment > textarea {
+    resize: none;
+    height: 300px;
+}
