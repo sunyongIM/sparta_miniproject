@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from pymongo import MongoClient  # pymongo를 임포트 하기
-import datetime
+from datetime import datetime
 import hashlib
 import jwt
 
@@ -19,11 +19,11 @@ def home():
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        return render_template('index.html', isOn = "on")
+        return render_template('index.html', isOn="on")
     except jwt.ExpiredSignatureError:
-        return render_template('index.html', isOn = "off")
+        return render_template('index.html', isOn="off")
     except jwt.exceptions.DecodeError:
-        return render_template('index.html', isOn = "off")
+        return render_template('index.html', isOn="off")
 
 
 # 자랑하기
@@ -39,11 +39,9 @@ def addboard():
         return redirect(url_for("login", redirectUrl="addboard"))
 
 
-
 # 로그인
 @app.route('/login')
 def login():
-
     return render_template('login.html')
 
 
@@ -63,11 +61,22 @@ def posting():
     save_to = f'static/boardImage/{filename}.{extension}'
     file.save(save_to)
 
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        userID = payload['id']
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("", msg="로그인 시간이 만료되었습니다."))
+
     # DB에 저장
     doc = {
         'title': title_receive,
+        'userID': userID,
         'comment': comment_receive,
-        'file': f'{filename}.{extension}'
+        'file': f'{filename}.{extension}',
+        'good': []
     }
     db.board.insert_one(doc)
 
