@@ -76,6 +76,7 @@ ol, ul, li, a {
 }
 
 .boardlist-main-card > .card {
+    cursor: pointer;
     margin: 20px 20px;
     flex-shrink: 0;
 }

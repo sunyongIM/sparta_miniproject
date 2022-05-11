@@ -18,11 +18,11 @@
     <script>
         function logout() {
             $.removeCookie('mytoken');
-            window.location.href = '/';
+            window.location.replace('/');
         }
 
-        function go_board() {
-            window.location.replace('addboard')
+        function go_myboard(ele, board) {
+            console.log(ele,board)
         }
     </script>
 </head>
@@ -56,9 +56,10 @@
                 {%set file = board.file%}
                 {%set date = board.date%}
                 {%set good = board.good%}
-                {%set board_id = board.board_id%}
+                {%set board_id = board_id%}
+            
                 <!--bulma-card-->
-                <div class="card">
+                <div class="card" onclick="go_myboard(this, '{{board_id}}')">
                     <div class="card-content">
                         <p class="title">
                             <img src="{{file}}">

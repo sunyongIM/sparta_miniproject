@@ -23,16 +23,18 @@ body::-webkit-scrollbar {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding-top: 100px
+    padding: 100px;
 }
 
 .addboard-content {
-    display: flex;
-    flex-wrap: wrap;
     padding: 60px;
     border: 2px solid black;
     border-radius: 40px;
     background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .addboard-content-img {
@@ -47,6 +49,9 @@ body::-webkit-scrollbar {
 
 .addboard-content-text {
     margin: 0 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .addboard-content-text-title {
@@ -61,5 +66,10 @@ body::-webkit-scrollbar {
 
 .addboard-content-text-comment > textarea {
     resize: none;
-    height: 300px;
+    height: 380px;
+}
+
+.addboard-submit-button {
+    display: flex;
+    justify-content: center;
 }

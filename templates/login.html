@@ -34,6 +34,7 @@
         // 로그인이 필요한 페이지에 접속해서 리다이렉트 되었을 경우 로그인 후 원래 페이지로 돌아가기
         // 위해서 url 쿼리파라미터에 있는 돌아갈 주소를 가져온다
         if (url.searchParams.get('redirectUrl') !== null) {
+            alert('로그인이 필요한 페이지입니다!')
             redirectUrl = url.searchParams.get('redirectUrl');
         }
         function login() {

@@ -26,7 +26,7 @@ def home():
         return render_template('index.html', isOn="off")
 
 
-# 자랑하기
+# 게시물 등록하기
 @app.route('/addboard')
 def addboard():
     token_receive = request.cookies.get('mytoken')
@@ -34,7 +34,7 @@ def addboard():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         return render_template('addboard.html')
     except jwt.ExpiredSignatureError:
-        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+        return redirect(url_for("login", redirectUrl="myboardlist"))
     except jwt.exceptions.DecodeError:
         # 로그인 후 원래 페이지로 돌아가기 위해 redirectUrl을 뿌려줌
         # 아래처럼 리다이렉트하면 브라우저 url이 /login?redirectUrl=addboard처럼 변경되고 login()
@@ -50,7 +50,7 @@ def login():
     return render_template('login.html')
 
 
-# 둘러보기
+# 게시물 전체보기
 # jinja2 템플릿을 이용하기 위해 게시물의 제목, 사진, 작성자등을
 # render_templates의 인자로 넘겨준다
 @app.route('/boardlist')
@@ -58,11 +58,14 @@ def boardlist():
     token_receive = request.cookies.get('mytoken')
     # board의 데이터를 가공 후 boardlist 페이지로 넘겨줍니다!
     boards_ = list(db.board.find())
+    print(boards_, 1)
     boards = []
+
     for board in boards_:
         boards.append({
+            'board_id': board['board_id'],
             'title': board['title'],
-            'id': board['id'],
+            'user_id': board['user_id'],
             'nick': board['nick'],
             'file': '../static/boardImage/' + board['file'],
             'date': board['file'][5:15],
@@ -70,6 +73,7 @@ def boardlist():
         })
     # print해서 확인해봐용!
     print(boards)
+
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         return render_template('boardlist.html', isOn="on", boards=boards)
@@ -77,6 +81,38 @@ def boardlist():
         return render_template('boardlist.html', isOn="off", boards=boards)
     except jwt.exceptions.DecodeError:
         return render_template('boardlist.html', isOn="off", boards=boards)
+
+
+# 내자랑 전체보기
+@app.route('/myboardlist')
+def myboardlist():
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        # token에서 회원 아이디를 빼서 게시글 조회
+        boards_ = list(db.board.find({'user_id': payload['id']}))
+        boards = []
+        for board in boards_:
+            boards.append({
+                'board_id': board['board_id'],
+                'title': board['title'],
+                'user_id': board['user_id'],
+                'nick': board['nick'],
+                'file': '../static/boardImage/' + board['file'],
+                'date': board['file'][5:15],
+                'good': len(board['good'])
+            })
+        print(boards)
+        return render_template('myboardlist.html', isOn="on", boards=boards)
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", redirectUrl="myboardlist"))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", redirectUrl="myboardlist"))
+
+
+# 내 자랑 하나보기
+# @app.route('/myboard', methods=['GET'])
+# def myboard():
 
 
 # 게시글 올리기 API
@@ -105,11 +141,11 @@ def posting():
     except jwt.exceptions.DecodeError:
         return redirect(url_for("", msg="로그인 시간이 만료되었습니다."))
 
-
     # DB에 저장
     doc = {
+        'board_id': filename,
         'title': title_receive,
-        'id': id,
+        'user_id': id,
         'comment': comment_receive,
         'file': f'{filename}.{extension}',
         'nick': nick,
