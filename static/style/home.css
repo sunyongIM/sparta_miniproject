@@ -7,10 +7,6 @@ ol, ul, li, a {
     padding: 0;
 }
 
-main {
-    min-width: 600px;
-}
-
 .home-main {
 
     background-image: url('background.png');

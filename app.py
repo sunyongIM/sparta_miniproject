@@ -47,8 +47,36 @@ def addboard():
 # 로그인
 @app.route('/login')
 def login():
-
     return render_template('login.html')
+
+
+# 둘러보기
+# jinja2 템플릿을 이용하기 위해 게시물의 제목, 사진, 작성자등을
+# render_templates의 인자로 넘겨준다
+@app.route('/boardlist')
+def boardlist():
+    token_receive = request.cookies.get('mytoken')
+    # board의 데이터를 가공 후 boardlist 페이지로 넘겨줍니다!
+    boards_ = list(db.board.find())
+    boards = []
+    for board in boards_:
+        boards.append({
+            'title': board['title'],
+            'id': board['id'],
+            'nick': board['nick'],
+            'file': '../static/boardImage/' + board['file'],
+            'date': board['file'][5:15],
+            'good': len(board['good'])
+        })
+    # print해서 확인해봐용!
+    print(boards)
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        return render_template('boardlist.html', isOn="on", boards=boards)
+    except jwt.ExpiredSignatureError:
+        return render_template('boardlist.html', isOn="off", boards=boards)
+    except jwt.exceptions.DecodeError:
+        return render_template('boardlist.html', isOn="off", boards=boards)
 
 
 # 게시글 올리기 API
@@ -70,18 +98,21 @@ def posting():
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        userID = payload['id']
+        id = payload['id']
+        nick = payload['nick']
     except jwt.ExpiredSignatureError:
         return redirect(url_for("", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
         return redirect(url_for("", msg="로그인 시간이 만료되었습니다."))
 
+
     # DB에 저장
     doc = {
         'title': title_receive,
-        'userID': userID,
+        'id': id,
         'comment': comment_receive,
         'file': f'{filename}.{extension}',
+        'nick': nick,
         'good': []
     }
     db.board.insert_one(doc)
@@ -128,6 +159,7 @@ def api_login():
     if result is not None:
         payload = {
             'id': id_receive,
+            'nick': result['nick'],
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=300)
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')

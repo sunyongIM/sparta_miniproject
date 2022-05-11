@@ -38,7 +38,7 @@
             </div>
             <div class="home-main-header-menu">
                 <a href="/addboard">자랑하기</a>
-                <a>둘러보기</a>
+                <a href="/boardlist">둘러보기</a>
                 {% if isOn == 'on'%}
                 <a onclick="logout()">로그아웃</a>
                 {% else %}
@@ -55,6 +55,9 @@
                     <p class="title">
                         <img src="static/style/Bully_Sticks.svg">
                     </p>
+                    <p class="title">
+                        제목
+                    </p>
                     <p class="subtitle">
                         강아지 자랑 제목 jinja2로 받으면 될듯?
                     </p>
@@ -69,9 +72,7 @@
                             <span>+11</span>
                         </span>
                     </p>
-                    <p class="card-footer-item">
-                        여기엔 뭐쓸까영?
-                    </p>
+
                 </footer>
             </div>
         </div>
