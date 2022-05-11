@@ -120,7 +120,6 @@ def api_register():
 def api_login():
     id_receive = request.form['id_give']
     pw_receive = request.form['pw_give']
-    redirectUrl = 1
     pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
 
     result = db.user.find_one({'id': id_receive, 'pw': pw_hash})

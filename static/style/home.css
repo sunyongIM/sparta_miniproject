@@ -24,7 +24,6 @@ main {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-
 }
 
 .home-main-header a {
@@ -35,7 +34,14 @@ main {
 }
 
 .home-main-header-title > a {
+    display: flex;
+    align-items: center;
     font-size: 40px;
+}
+
+.home-main-header-title > a > img{
+    width: 75px;
+    height: 75px;
 }
 
 .home-main-header-menu {
@@ -47,6 +53,22 @@ main {
     flex-shrink: 0;
     font-size: 19px;
     margin: 0 15px;
+}
+
+.home-main-card{
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-main-card-title{
+    margin: 30px 0;
+    font-family: 'Roboto';
+    font-size: 40px;
+    font-weight: bold;
+    color: #FFFFFF;
 }
 
 .home-explain {

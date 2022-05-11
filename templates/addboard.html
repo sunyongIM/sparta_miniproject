@@ -8,6 +8,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!--Bulma-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <!-- Bulma Icon -->
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <title>자랑하기</title>
 
@@ -16,9 +17,7 @@
         // 이미지 미리보기 이벤트
         function change_preview(a) {
             let file = a.files[0]
-            $("#image").attr("src", a.result);
             let reader = new FileReader();
-            console.log(file)
             reader.onload = function (e) {
                 $("#image").attr("src", e.target.result);
                 $("#image").css("width", "400");
@@ -69,7 +68,7 @@
 <div class="addboard-wrapper">
     <div class="addboard-content">
         <div class="addboard-content-img">
-            <img src="../static/style/dog.jpg" id="image">
+            <img src="../static/style/Bully_Sticks.svg" id="image">
             <div class="file is-primary" style="justify-content: center; margin-top: 10px">
                 <label class="file-label">
                     <input onchange="change_preview(this)" id="img-file" class="file-input" type="file" name="resume"
