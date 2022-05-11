@@ -26,11 +26,20 @@
     {% endif %}
 
     <script>
-
+        // 현재 URL을 파싱해서
+        // redirectUrl이 있으면 로그인 요청 성공후 해당 url로 이동하게 해줌!
+        // app.py의 addboard()함수의 설명을 읽어보자!
+        const url = new URL(window.location.href);
+        let redirectUrl = '/'
+        // 로그인이 필요한 페이지에 접속해서 리다이렉트 되었을 경우 로그인 후 원래 페이지로 돌아가기
+        // 위해서 url 쿼리파라미터에 있는 돌아갈 주소를 가져온다
+        if (url.searchParams.get('redirectUrl') !== null) {
+            redirectUrl = url.searchParams.get('redirectUrl');
+        }
         function login() {
             $.ajax({
                 type: "POST",
-                url: "/api/login",
+                url: '/api/login',
                 data: {
                     id_give: $("#input-userid").val(),
                     pw_give: $("#input-password").val()
@@ -39,7 +48,8 @@
                     if (response['result'] == 'success') {
                         ///쿠키생성
                         $.cookie('mytoken', response['token']);
-                        window.location.href = '/'
+                        // redirectUrl로 이동!
+                        window.location.href = redirectUrl
                     } else {
                         // 로그인이 안되면 에러메시지를 띄웁니다.
                         alert(response['msg'])
@@ -105,7 +115,7 @@
 
         /// oninput 이벤트리스너를 통한 아이디 형식 확인
         function idListener(ele) {
-            if($("#help-id").hasClass("is-success")){
+            if ($("#help-id").hasClass("is-success")) {
                 $("#help-id").text("아이디 확인을 다시 해야합니다").removeClass("is-safe").addClass("is-danger")
             }
         }
@@ -181,7 +191,7 @@
                 },
                 success: function (response) {
                     alert("회원가입을 축하드립니다!")
-                    window.location.replace("/login")
+                    window.location.reload()
                 }
             });
         }
@@ -225,7 +235,8 @@
                     <div class="content">
                         <div class="field has-addons">
                             <div class="control has-icons-left" style="width:100%">
-                                <input id="input-userid" class="input" type="text" placeholder="아이디" oninput="idListener(this)">
+                                <input id="input-userid" class="input" type="text" placeholder="아이디"
+                                       oninput="idListener(this)">
                                 <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
                             </div>
                             <div id="btn-check-dup" class="control is-hidden">

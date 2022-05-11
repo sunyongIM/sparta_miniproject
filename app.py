@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from pymongo import MongoClient  # pymongo를 임포트 하기
-from datetime import datetime
+import datetime
 import hashlib
 import jwt
 
@@ -36,12 +36,18 @@ def addboard():
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
+        # 로그인 후 원래 페이지로 돌아가기 위해 redirectUrl을 뿌려줌
+        # 아래처럼 리다이렉트하면 브라우저 url이 /login?redirectUrl=addboard처럼 변경되고 login()
+        # 함수가 호출되어 render_template('login.html') 로 login.html 화면이 나타난다.
+        # 로그인 페이지를 렌더하는 login()함수에서 redirectUrl 쿼리 파라미터를 받아 사용하지 않고
+        # 클라이언트에서 브라우저의 url을 파싱해서 로그인 요청이 완료되면 해당 페이지로 이동시킴!
         return redirect(url_for("login", redirectUrl="addboard"))
 
 
 # 로그인
 @app.route('/login')
 def login():
+
     return render_template('login.html')
 
 
@@ -52,7 +58,7 @@ def posting():
     comment_receive = request.form["comment_give"]
     file = request.files["file_give"]
     # static 폴더에 저장될 파일 이름 생성하기
-    today = datetime.now()
+    today = datetime.datetime.now()
     mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
     filename = f'file-{mytime}'
     # 확장자 나누기
@@ -114,7 +120,7 @@ def api_register():
 def api_login():
     id_receive = request.form['id_give']
     pw_receive = request.form['pw_give']
-
+    redirectUrl = 1
     pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
 
     result = db.user.find_one({'id': id_receive, 'pw': pw_hash})
@@ -127,7 +133,7 @@ def api_login():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        ## token을 줍니다.
+        ## token과 redirectURL을 -> 클라이언트에서 로그인 후 이 정보로 리다이이렉트
         return jsonify({'result': 'success', 'token': token})
     ## 찾지 못하면
     else:
