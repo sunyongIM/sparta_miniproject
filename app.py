@@ -111,9 +111,9 @@ def myboardlist():
 
 
 # 내 자랑 하나보기
-@app.route('/myboard', methods=['POST'])
-def myboard():
-    board_id_receive = request.form["board_id_give"]
+@app.route('/myboard/<board_id>')
+def myboard(board_id):
+    board_id_receive = board_id
     board_ = db.board.find_one({'board_id': board_id_receive})
     board = {
         "board_id": board_['board_id'],
@@ -121,7 +121,9 @@ def myboard():
         "comment": board_['comment'],
         "file": '../static/boardImage/' + board_['file']
     }
-    return render_template('index.html')
+    print(board)
+    return render_template('myboard.html', board=board)
+
 
 
 # 게시글 올리기 API

@@ -23,13 +23,7 @@
 
         function go_myboard(board_id) {
             console.log(board_id)
-            $.ajax({
-                type: "POST",
-                url: "/myboard",
-                data: {board_id_give: board_id},
-                success: function (response) {
-                }
-            })
+            window.location.href = '/myboard/' + board_id
         }
     </script>
 </head>
