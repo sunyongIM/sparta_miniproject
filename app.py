@@ -89,7 +89,7 @@ def myPage():
 def boardlist():
     token_receive = request.cookies.get('mytoken')
     # board의 데이터를 가공 후 boardlist 페이지로 넘겨줍니다!
-    boards_ = list(db.board.find())
+    boards_ = reversed(list(db.board.find()))
     print(boards_, 1)
     boards = []
 
@@ -122,7 +122,7 @@ def myboardlist():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         # token에서 회원 아이디를 빼서 게시글 조회
-        boards_ = list(db.board.find({'user_id': payload['id']}))
+        boards_ = reversed(list(db.board.find({'user_id': payload['id']})))
         boards = []
         for board in boards_:
             boards.append({
@@ -308,7 +308,7 @@ def api_login():
             'nick': result['nick'],
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=300)
         }
-        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        token = jwt.encode(payload, SECRET_KEY, algorithm='HS256').decode('utf-8')
 
         ## token과 redirectURL을 -> 클라이언트에서 로그인 후 이 정보로 리다이이렉트
         return jsonify({'result': 'success', 'token': token})
