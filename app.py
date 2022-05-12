@@ -52,6 +52,24 @@ def login():
     return render_template('login.html')
 
 
+# 마이페이지
+@app.route('/mypage')
+def myPage():
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        # payload 안에 id가 들어있습니다. 이 id로 유저정보를 찾습니다.
+        userinfo = db.user.find_one({'id': payload['id']}, {'_id': 0})
+        result = {'id': userinfo['id'], 'pw': userinfo['pw'], 'nick': userinfo['nick']}
+        return render_template('mypage.html', result=result)
+    except jwt.ExpiredSignatureError:
+        # 위를 실행했는데 만료시간이 지났으면 에러가 납니다.
+        return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
+    except jwt.exceptions.DecodeError:
+        # 로그인 정보가 없으면 에러가 납니다!
+        return redirect(url_for("/"))
+
+
 # 게시물 전체보기
 # jinja2 템플릿을 이용하기 위해 게시물의 제목, 사진, 작성자등을
 # render_templates의 인자로 넘겨준다
@@ -236,7 +254,6 @@ def good_board():
     return jsonify({'result': 'success', 'good': good})
 
 
-
 ###### 로그인과 회원가입을 위한 API #####
 
 ## 아이디 중복확인
@@ -288,22 +305,48 @@ def api_login():
         return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
 
 
-# 보안: 로그인한 사용자만 통과할 수 있는 API
-@app.route('/api/isAuth', methods=['GET'])
-def api_valid():
+# 비밀번호 확인 API (비밀번호 변경할 때 현재 비밀번호와 )
+@app.route('/api/checkpw', methods=['POST'])
+def checkPW():
     token_receive = request.cookies.get('mytoken')
+    pw_receive = request.form["pw_give"]
     try:
-        # token을 시크릿키로 디코딩합니다.
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        # payload 안에 id가 들어있습니다. 이 id로 유저정보를 찾습니다.
         userinfo = db.user.find_one({'id': payload['id']}, {'_id': 0})
-        return jsonify({'result': 'success', 'nickname': userinfo['nick']})
+        pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
+
+        if (pw_hash == userinfo['pw']):
+            return jsonify({'result': 'success'})
+        else:
+            return jsonify({'result': 'fail'})
     except jwt.ExpiredSignatureError:
         # 위를 실행했는데 만료시간이 지났으면 에러가 납니다.
         return jsonify({'result': 'fail', 'msg': '로그인 시간이 만료되었습니다.'})
     except jwt.exceptions.DecodeError:
         # 로그인 정보가 없으면 에러가 납니다!
-        return jsonify({'result': 'fail', 'msg': '로그인 정보가 존재하지 않습니다.'})
+        return redirect(url_for("login", redirectUrl="mypage"))
+
+
+# 회원정보수정 API - 선용
+@app.route('/api/changeinfo', methods=['POST'])
+def changeInfo():
+    id_receive = request.form["id_give"]
+    pw_receive = request.form["pw_give"]
+    pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
+    db.user.update_one({'id': id_receive}, {'$set': {'pw': pw_hash}})
+    return jsonify({'result': 'success'})
+
+
+# 회원탈퇴 API - 선용
+@app.route('/api/signout', methods=['POST'])
+def deleteInfo():
+    id_receive = request.form["id_give"]
+    db.user.delete_one({'id': id_receive})
+    files = list(db.board.find({'user_id': id_receive}))
+    for file in files:
+        os.remove('./static/boardImage/' + file['file'])
+    db.board.delete_many({'user_id': id_receive})
+    return jsonify({'result': 'success'})
 
 
 if __name__ == '__main__':
