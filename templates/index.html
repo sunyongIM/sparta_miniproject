@@ -2,6 +2,10 @@
 <html lang="en">
 
 <head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta property="og:title" content="Dangstagram"/>
+    <meta property="og:description" content="Dangstagram Home"/>
+    <meta property="og:image" content="{{ url_for('static', filename='favicon.ico') }}"/>
     <meta charset="UTF-8">
     <!--Custom CSS-->
     <link rel="stylesheet" href="../static/style/home.css">
@@ -14,7 +18,7 @@
     <!--Cookie-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 
-    <title>Dogstagram</title>
+    <title>Dangstagram</title>
     <script>
         function logout() {
             $.removeCookie('mytoken');
@@ -33,7 +37,7 @@
         <div class="home-main-header">
             <div class="home-main-header-title">
                 <a><img src="../static/style/Bully_Sticks.svg">
-                    <span>Dogstagram</span>
+                    <span>Dangstagram</span>
                 </a>
             </div>
             <div class="home-main-header-menu">
@@ -52,29 +56,36 @@
             <div class="home-main-card-title">
                 최고의 댕댕이에게 투표해보세요!
             </div>
-            <div class="card" style="width: 400px;">
+            {%set title = board.title %}
+            {%set comment = board.comment %}
+            {%set nick = board.nick %}
+            {%set file = board.file %}
+            {%set date = board.date %}
+            {%set good = board.good %}
+            <div class="card" style="cursor: auto">
                 <div class="card-content">
-                    <p class="title">
-                        <img src="static/style/Bully_Sticks.svg">
+                    <p class="title" style="display: flex; justify-content: center">
+                        <img src="{{file}}">
                     </p>
-                    <p class="title">
-                        제목
-                    </p>
-                    <p class="subtitle">
-                        강아지 자랑 제목 jinja2로 받으면 될듯?
-                    </p>
+                    <div class="card-content-title-like">
+                        <h1 class="title" style="margin: 0">
+                            {{title}}
+                        </h1>
+                    </div>
+                    <div class="card-content-comment">
+                        {{comment}}
+                    </div>
+                    <div class="icon-text">
+                                <span class="icon">
+                                    <i class="fas fa-heart"></i>
+                                </span>
+                                <!--이거도 jinja-->
+                                <span id='{{board_id}}'>{{good}}</span>
+                            </div>
                 </div>
                 <footer class="card-footer">
-                    <p class="card-footer-item">
-                        <span class="icon-text">
-                            <span class="icon">
-                                    <i class="fas fa-heart"></i>
-                            </span>
-                            <!--이거도 jinja-->
-                            <span>+11</span>
-                        </span>
-                    </p>
-
+                    <div>{{nick}}</div>
+                    <div>{{date}}</div>
                 </footer>
             </div>
         </div>

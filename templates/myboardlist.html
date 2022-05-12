@@ -2,6 +2,10 @@
 <html lang="en">
 
 <head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta property="og:title" content="Dangstagram"/>
+    <meta property="og:description" content="Dangstagram 나의 댕댕이"/>
+    <meta property="og:image" content="{{ url_for('static', filename='favicon.ico') }}"/>
     <meta charset="UTF-8">
     <!--Custom CSS-->
     <link rel="stylesheet" href="../static/style/boardlist.css">
@@ -14,7 +18,7 @@
     <!--Cookie-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 
-    <title>Dogstagram</title>
+    <title>나의 댕댕이</title>
     <script>
         function logout() {
             $.removeCookie('mytoken');
@@ -34,7 +38,7 @@
         <div class="boardlist-main-header">
             <div class="boardlist-main-header-title">
                 <a href="/"><img src='../static/style/Bully_Sticks.svg'>
-                    <span>Dogstagram</span>
+                    <span>Dangstagram</span>
                 </a>
             </div>
             <div class="boardlist-main-header-menu">
@@ -62,9 +66,9 @@
             {%set board_id = board.board_id%}
 
             <!--bulma-card-->
-            <div class="card" onclick="go_myboard('{{board_id}}')">
+            <div class="card" style="cursor: pointer" onclick="go_myboard('{{board_id}}')">
                 <div class="card-content">
-                    <p class="title">
+                    <p class="title" style="display: flex; justify-content: center">
                         <img src="{{file}}">
                     </p>
                     <div class="card-content-title-like">
@@ -91,7 +95,7 @@
             {% endfor %}
         </div>
     </div>
-
+</div>
 </body>
 
 </html>

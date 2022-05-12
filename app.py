@@ -19,13 +19,25 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     token_receive = request.cookies.get('mytoken')
+    most_good = list(db.board.find())
+
+    most_good_board = sorted(most_good, key=(lambda x: len(x['good'])))[-1]
+    board = {
+        'title': most_good_board['title'],
+        'comment': most_good_board['comment'],
+        'nick': most_good_board['nick'],
+        'file': '../static/boardImage/' + most_good_board['file'],
+        'date': most_good_board['file'][5:15],
+        'good': len(most_good_board['good'])
+    }
+    print(board)
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        return render_template('index.html', isOn="on")
+        return render_template('index.html', isOn="on", board = board)
     except jwt.ExpiredSignatureError:
-        return render_template('index.html', isOn="off")
+        return render_template('index.html', isOn="off", board = board)
     except jwt.exceptions.DecodeError:
-        return render_template('index.html', isOn="off")
+        return render_template('index.html', isOn="off", board = board)
 
 
 # 게시물 등록하기
@@ -34,7 +46,7 @@ def addboard():
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        return render_template('addboard.html')
+        return render_template('addboard.html', isOn="on")
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", redirectUrl="myboardlist"))
     except jwt.exceptions.DecodeError:
@@ -142,7 +154,7 @@ def myboard(board_id):
         "comment": board_['comment'],
         "file": '../static/boardImage/' + board_['file']
     }
-    return render_template('myboard.html', board=board)
+    return render_template('myboard.html', board=board, isOn='on')
 
 
 # 게시글 올리기 API

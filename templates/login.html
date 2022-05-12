@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
-
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta property="og:title" content="Dangstagram"/>
+    <meta property="og:description" content="Dangstagram Login"/>
+    <meta property="og:image" content="{{ url_for('static', filename='favicon.ico') }}"/>
     <!-- Webpage Title -->
     <title>Log In | DangStar</title>
 
@@ -37,6 +40,7 @@
             alert('로그인이 필요한 페이지입니다!')
             redirectUrl = url.searchParams.get('redirectUrl');
         }
+
         function login() {
             $.ajax({
                 type: "POST",

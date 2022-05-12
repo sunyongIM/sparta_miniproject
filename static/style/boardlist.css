@@ -76,7 +76,6 @@ ol, ul, li, a {
 }
 
 .boardlist-main-card > .card {
-    cursor: pointer;
     margin: 20px 20px;
     flex-shrink: 0;
 }
@@ -102,6 +101,11 @@ ol, ul, li, a {
     word-break: break-all;
     overflow: auto;
 }
+
+.card-content > .icon-text {
+    justify-content: end;
+}
+
 .card-content-comment {
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */

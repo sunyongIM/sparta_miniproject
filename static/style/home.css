@@ -8,10 +8,10 @@ ol, ul, li, a {
 }
 
 .home-main {
-
     background-image: url('background.png');
     background-repeat: no-repeat;
     background-size: cover;
+    height: 1000px;
 }
 
 .home-main-header {
@@ -51,20 +51,66 @@ ol, ul, li, a {
     margin: 0 15px;
 }
 
-.home-main-card{
+.home-main-card {
     padding: 60px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
+
+}
+.home-main-card > .home-main-card-title{
+    color: #F1FDFF;
+    font-family: Roboto;
+    font-size: 35px;
+    font-weight: bold;
+}
+.home-main-card > .card {
+    margin: 20px 20px;
+    flex-shrink: 0;
 }
 
-.home-main-card-title{
-    margin: 30px 0;
-    font-family: 'Roboto';
-    font-size: 40px;
-    font-weight: bold;
-    color: #FFFFFF;
+.home-main-card > .card img {
+    border: solid 1px gainsboro;
+    width: 250px;
+    height: 270px;
+}
+
+
+.home-main-card > .card .card-content-title-like {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+
+}
+
+.home-main-card > .card .card-content-comment {
+    margin: 10px 0;
+    height: 80px;
+    max-width: 250px;
+    word-break: break-all;
+    overflow: auto;
+}
+
+.card-content > .icon-text {
+    justify-content: end;
+}
+
+.card-content-comment {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.card-content-comment::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+}
+
+.home-main-card > .card .card-footer {
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .home-explain {

@@ -19,13 +19,51 @@ body::-webkit-scrollbar {
 }
 
 .addboard-wrapper {
+
+}
+.addboard-header {
+    padding: 20px 60px;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    padding: 100px;
+    flex-wrap: wrap;
+    background: #F1FDFF;
 }
 
+.addboard-header a {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: bold;
+    color: black;
+}
+
+.addboard-header-title > a {
+    display: flex;
+    align-items: center;
+    font-size: 40px;
+}
+
+.addboard-header-title > a > img {
+    width: 75px;
+    height: 75px;
+}
+
+.addboard-header-menu {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.addboard-header-menu > a {
+    flex-shrink: 0;
+    font-size: 19px;
+    margin: 0 15px;
+}
+.addboard-content-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+}
 .addboard-content {
     padding: 60px;
     border: 2px solid black;
