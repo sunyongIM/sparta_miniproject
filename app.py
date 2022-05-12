@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from pymongo import MongoClient  # pymongo를 임포트 하기
 import datetime
@@ -65,6 +67,7 @@ def boardlist():
         boards.append({
             'board_id': board['board_id'],
             'title': board['title'],
+            'comment': board['comment'],
             'user_id': board['user_id'],
             'nick': board['nick'],
             'file': '../static/boardImage/' + board['file'],
@@ -72,7 +75,6 @@ def boardlist():
             'good': len(board['good'])
         })
     # print해서 확인해봐용!
-    print(boards)
 
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
@@ -96,6 +98,7 @@ def myboardlist():
             boards.append({
                 'board_id': board['board_id'],
                 'title': board['title'],
+                'comment': board['comment'],
                 'user_id': board['user_id'],
                 'nick': board['nick'],
                 'file': '../static/boardImage/' + board['file'],
@@ -121,26 +124,24 @@ def myboard(board_id):
         "comment": board_['comment'],
         "file": '../static/boardImage/' + board_['file']
     }
-    print(board)
     return render_template('myboard.html', board=board)
-
 
 
 # 게시글 올리기 API
 @app.route('/api/addboard', methods=['POST'])
-def posting():
+def add_board():
     title_receive = request.form["title_give"]
     comment_receive = request.form["comment_give"]
-    file = request.files["file_give"]
+    file_receive = request.files["file_give"]
     # static 폴더에 저장될 파일 이름 생성하기
     today = datetime.datetime.now()
     mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
     filename = f'file-{mytime}'
     # 확장자 나누기
-    extension = file.filename.split('.')[-1]
+    extension = file_receive.filename.split('.')[-1]
     # static 폴더에 저장
     save_to = f'static/boardImage/{filename}.{extension}'
-    file.save(save_to)
+    file_receive.save(save_to)
 
     token_receive = request.cookies.get('mytoken')
     try:
@@ -148,9 +149,9 @@ def posting():
         id = payload['id']
         nick = payload['nick']
     except jwt.ExpiredSignatureError:
-        return redirect(url_for("", msg="로그인 시간이 만료되었습니다."))
+        return redirect(url_for("", msg="로그인이 필요합니다!"))
     except jwt.exceptions.DecodeError:
-        return redirect(url_for("", msg="로그인 시간이 만료되었습니다."))
+        return redirect(url_for("", msg="로그인이 필요합니다!"))
 
     # DB에 저장
     doc = {
@@ -165,6 +166,75 @@ def posting():
     db.board.insert_one(doc)
 
     return jsonify({'msg': '업로드 완료!'})
+
+
+# 게시글 수정하기 API
+@app.route('/api/editboard', methods=['PUT'])
+def edit_board():
+    title_receive = request.form["title_give"]
+    comment_receive = request.form["comment_give"]
+    file_receive = request.files["file_give"]
+    board_id_receive = request.form["board_id_give"]
+    prev_file_receive = request.form["prev_file_give"]
+    db.board.update_one({'board_id': board_id_receive},
+                        {'$set': {'title': title_receive}})
+    db.board.update_one({'board_id': board_id_receive},
+                        {'$set': {'comment': comment_receive}})
+
+    # 만약 이미지 파일이 변경되지 않을때 보내주는 foo.txt 파일이 아닐 경우에는
+    # 파일을 다시 저장 한 후, 기존의 파일은 삭제
+    if file_receive.filename != 'foo.txt':
+        today = datetime.datetime.now()
+        mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+        filename = f'file-{mytime}'
+        extension = file_receive.filename.split('.')[-1]
+        save_to = f'static/boardImage/{filename}.{extension}'
+        file_receive.save(save_to)
+        # 기존 파일의 경로를 받아서 삭제!
+        # 기존 파일은 삭제 맨앞의 .을 하나 떼어야 정확한 경로로 갈 수 있다.
+        # html 페이지가 있는 경로와 app.py의 경로가 다르므로!
+        os.remove(prev_file_receive[1:])
+
+        db.board.update_one({'board_id': board_id_receive},
+                            {'$set': {'file': f'{filename}.{extension}'}})
+
+    return jsonify({'result': 'success'})
+
+
+# 게시글 삭제하기 API
+@app.route('/api/deleteboard', methods=['DELETE'])
+def delete_board():
+    board_id_receive = request.args.get('board_id_give');
+    prev_img = db.board.find_one({'board_id': board_id_receive})
+
+    os.remove('./static/boardImage/' + prev_img['file'])
+    db.board.delete_one({'board_id': board_id_receive})
+
+    return jsonify({'result': 'success'})
+
+
+# 좋아요 기능 API
+@app.route('/api/goodboard', methods=['POST'])
+def good_board():
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': 'fail', 'msg': "로그인이 필요합니다!"})
+    except jwt.exceptions.DecodeError:
+        return jsonify({'result': 'fail', 'msg': "로그인이 필요합니다!"})
+    board_id_receive = request.form['board_id_give']
+
+    good = db.board.find_one({"board_id": board_id_receive})['good']
+    if user_id in good:
+        good.remove(user_id)
+    else:
+        good.append(user_id)
+    db.board.update_one({'board_id': board_id_receive}, {'$set': {'good': good}})
+    print(good)
+    return jsonify({'result': 'success', 'good': good})
+
 
 
 ###### 로그인과 회원가입을 위한 API #####

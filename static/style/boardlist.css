@@ -86,12 +86,29 @@ ol, ul, li, a {
     width: 250px;
     height: 270px;
 }
-.boardlist-main-card > .card .card-content-title-like{
+
+.boardlist-main-card > .card .card-content-title-like {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 5px 0;
 
+}
+
+.boardlist-main-card > .card .card-content-comment {
+    margin: 10px 0;
+    height: 80px;
+    max-width: 250px;
+    word-break: break-all;
+    overflow: auto;
+}
+.card-content-comment {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.card-content-comment::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
 }
 
 .boardlist-main-card > .card .card-footer {
